@@ -43,7 +43,6 @@ desktop.ini
 # ── Misc ───────────────────────────────────────────────────
 *.log
 *.tmp
-Ping.txt
 test/*
 !test/*_sample.JPG
 demo.py

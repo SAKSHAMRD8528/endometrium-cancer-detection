@@ -1,0 +1,196 @@
+===============================================================
+      ENDOMETRIUM CANCER DETECTION (ECD) — Quick Reference
+===============================================================
+
+=== How to Run the Project ===
+
+--- OPTION A: One-Click Setup (Recommended for New Laptops) ---
+
+   1. Double-click the "run.bat" file in the project folder.
+   2. The script will automatically:
+      - Check for Python
+      - Create a virtual environment (venv)
+      - Install all necessary libraries (requirements.txt)
+      - Start the Flask server
+   3. Once finished, open your browser to: http://127.0.0.1:5000/
+
+--- OPTION B: Manual Setup (Classic) ---
+
+   1. Open Command Prompt / PowerShell and navigate to the project:
+      cd "C:\Users\Saksham\Desktop\AIML_ECD"
+
+   2. Activate the virtual environment:
+      venv\Scripts\activate
+
+   3. (First time only) Install dependencies:
+      pip install -r requirements.txt
+
+   4. Run the application:
+      python app.py
+
+   5. Open your browser and go to:
+      http://127.0.0.1:5000/
+
+   6. To stop the server: Press Ctrl + C in the terminal.
+
+===============================================================
+
+=== Application Routes ===
+
+   /                  → Home / Login / Register page
+   /userlog           → Login authentication (POST)
+   /userreg           → User registration (POST)
+   /image             → Image upload & cancer classification (POST)
+   /graph.html        → Model performance graphs (Accuracy, Loss, Confusion Matrix)
+   /developer.html    → Developer team profiles
+   /logout            → Logout (redirects to home)
+
+===============================================================
+
+=== What the App Does ===
+
+Upload a histopathological endometrium tissue slide and the system will:
+   1. Preprocess the image (Grayscale → Edge Detection → Binary Threshold)
+   2. Count cells (total, damaged, overlapping)
+   3. Classify the tissue using a trained CNN model:
+      - Endometrial Adenocarcinoma  →  Stage 1 Cancer
+      - Endometrial Hyperplasia     →  Stage 2 Cancer
+      - Endometrial Polyp           →  Stage 3 Cancer
+      - Normal Endometrium          →  Healthy / No Cancer
+   4. Show prediction accuracy, comparison bar chart, and processed images
+
+===============================================================
+
+=== Tech Stack ===
+
+   Backend        : Python 3, Flask 3.1.1
+   ML Model       : TensorFlow 2.11 / Keras CNN (.h5)
+   Computer Vision: OpenCV 4.8
+   Plotting       : Matplotlib
+   Frontend       : HTML, Vanilla CSS, Jinja2 templates
+   Database       : SQLite (user_data.db — login/register)
+
+===============================================================
+
+=== Project File Structure ===
+
+AIML_ECD/
+├── app.py                                       # Flask app — all routes & CNN inference
+├── requirements.txt                             # Python dependencies (pip freeze)
+├── Convolutional_Neural_Network.h5              # Trained CNN model (15 MB)
+├── ConvolutionalNeuralNetwork_ModelTraining.ipynb  # Jupyter notebook — model training
+├── user_data.db                                 # SQLite database (auto-created on register)
+├── README.md                                    # GitHub README
+├── Ping.txt                                     # This file — quick-start reference
+├── .gitignore                                   # Git exclusions
+│
+├── static/
+│   ├── css/
+│   │   └── style.css                            # Dark theme design system
+│   ├── Developers/                              # Developer profile images
+│   ├── images/                                  # Uploaded images (temp, runtime-only)
+│   ├── acc_graph.png                            # Model accuracy graph
+│   ├── loss_plot.png                            # Model loss graph
+│   ├── conf_mat.png                             # Confusion matrix image
+│   ├── gray.jpg                                 # Grayscale output (runtime)
+│   ├── edges.jpg                                # Edge detection output (runtime)
+│   ├── threshold.jpg                            # Threshold output (runtime)
+│   └── matrix.png                               # Bar chart output (runtime)
+│
+├── templates/
+│   ├── base.html                                # Base layout (navbar, footer)
+│   ├── index.html                               # Login & Registration page
+│   ├── userlog.html                             # Upload & Results page
+│   ├── graph.html                               # Model performance graphs
+│   └── developer.html                           # Developer profiles page
+│
+├── test/                                        # Test images folder
+└── venv/                                        # Python virtual environment
+
+===============================================================
+
+=== Key Dependencies (from requirements.txt) ===
+
+   Flask          3.1.1     — Web framework
+   TensorFlow     2.11.0    — Deep learning / CNN model
+   Keras          2.11.0    — High-level neural network API
+   OpenCV         4.8.1.78  — Image processing (cv2)
+   NumPy          1.23.5    — Numerical computing
+   Matplotlib     3.10.3    — Chart / graph generation
+   scikit-learn   1.7.1     — Accuracy scoring
+   Pillow         11.3.0    — Image loading (load_img)
+   h5py           3.14.0    — HDF5 model file I/O
+   SQLite3                  — Built-in Python DB (no pip needed)
+
+===============================================================
+
+=== Image Processing Pipeline (in /image route) ===
+
+   1. Uploaded file saved to:  static/images/<filename>
+   2. Grayscale conversion  →  static/gray.jpg
+   3. Canny edge detection  →  static/edges.jpg
+   4. Binary thresholding   →  static/threshold.jpg
+   5. Cell counting via contour detection:
+      - Total cells  = number of contours
+      - Damaged cells = contours with area < 100 px
+      - Overlapping   = centroids within 20 px distance
+   6. CNN prediction on 128×128 grayscale image
+   7. Accuracy bar chart   →  static/matrix.png
+
+===============================================================
+
+=== Database Schema (user_data.db) ===
+
+   Table: user
+   Columns: name TEXT, password TEXT, mobile TEXT, email TEXT
+
+   - Auto-created on first user registration
+   - Stores login credentials (plain text — dev/research use only)
+
+===============================================================
+
+=== Developers ===
+
+   Suhani Bodhke       — Developer
+   Saksham Dhumale     — Developer
+   Nishant Deshmukh    — Developer
+   Vaishnavi Kulkarni  — Developer
+   Yash Iskape         — Developer
+
+   Institution: Prof. Ram Meghe Institute of Technology & Research
+
+===============================================================
+
+=== Troubleshooting ===
+
+   Problem: "ModuleNotFoundError" on startup
+   Fix:     Activate venv first → venv\Scripts\activate
+            Then → pip install -r requirements.txt
+
+   Problem: App crashes with Tkinter / display error
+   Fix:     matplotlib.use('Agg') is already set in app.py (line 5).
+            Make sure you're running from the CMD, not double-clicking.
+
+   Problem: Image upload shows "No file selected"
+   Fix:     Make sure you choose a file before clicking Submit.
+
+   Problem: Old image still showing after new upload
+   Fix:     Cache-busting timestamps are appended (?t=...).
+            Try hard refresh: Ctrl + Shift + R in browser.
+
+   Problem: "Model not found" error
+   Fix:     Ensure Convolutional_Neural_Network.h5 is in the
+            project root (AIML_ECD/) folder.
+
+===============================================================
+
+=== Notes ===
+
+   - The .gitignore excludes: venv/, user_data.db, Ping.txt,
+     test/, runtime images (gray/edges/threshold/matrix), and
+     IDE folders (.vscode/, .idea/).
+   - This file (Ping.txt) is gitignored — it is a local-only
+     quick reference and will NOT be pushed to GitHub.
+   - This is a RESEARCH / EDUCATIONAL project — NOT for clinical use.
+
+===============================================================
