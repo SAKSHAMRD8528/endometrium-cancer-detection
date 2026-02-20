@@ -67,15 +67,19 @@ def userreg():
 
     return render_template('index.html')
 
+@app.route('/analyse')
+def analyse():
+    return render_template('userlog.html')
+
 @app.route('/developer.html')
 def developer():
     return render_template('developer.html')
 
 @app.route('/graph.html', methods=['GET', 'POST'])
 def graph():
-    images = ['/static/acc_graph.png',
-              '/static/loss_plot.png',
-              '/static/conf_mat.png']
+    images = ['/static/Graphs/acc_graph.png',
+              '/static/Graphs/loss_plot.png',
+              '/static/Graphs/conf_mat.png']
     content = ['Accuracy Graph', 'Loss Graph(Error Message)', 'Confusion Matrix']
     return render_template('graph.html', images=images, content=content)
 
