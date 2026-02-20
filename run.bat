@@ -5,19 +5,26 @@ echo ===============================================================
 echo       ENDOMETRIUM CANCER DETECTION (ECD) — Auto Setup
 echo ===============================================================
 
-:: 1. Check for Python installation
-python --version >nul 2>&1
-if %errorlevel% neq 0 (
+:: 1. Detect Python command
+set PY_CMD=
+python --version >nul 2>&1 && set PY_CMD=python
+if not defined PY_CMD (
+    py --version >nul 2>&1 && set PY_CMD=py
+)
+
+if not defined PY_CMD (
     echo [ERROR] Python is not installed or not in PATH.
     echo Please install Python 3.9+ from python.org and try again.
     pause
     exit /b 1
 )
 
+echo [INFO] Using command: %PY_CMD%
+
 :: 2. Create Virtual Environment if it doesn't exist
 if not exist "venv" (
     echo [INFO] Creating virtual environment...
-    python -m venv venv
+    %PY_CMD% -m venv venv
     if %errorlevel% neq 0 (
         echo [ERROR] Failed to create virtual environment.
         pause
@@ -37,8 +44,8 @@ if %errorlevel% neq 0 (
 
 :: 4. Install/Update dependencies
 echo [INFO] Checking/Installing dependencies...
-python -m pip install --upgrade pip
-pip install -r requirements.txt
+venv\Scripts\python.exe -m pip install --upgrade pip
+venv\Scripts\pip.exe install -r requirements.txt
 if %errorlevel% neq 0 (
     echo [ERROR] Failed to install dependencies.
     pause
@@ -50,7 +57,7 @@ echo [SUCCESS] Dependencies are ready.
 echo [INFO] Starting Endometrium Cancer Detection system...
 echo [INFO] The app will be available at: http://127.0.0.1:5000/
 echo.
-python app.py
+venv\Scripts\python.exe app.py
 
 if %errorlevel% neq 0 (
     echo.
