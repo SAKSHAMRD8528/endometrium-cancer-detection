@@ -5,6 +5,11 @@ __pycache__/
 *.pyd
 *.pyc
 
+# ── Executables / Installers ───────────────────────────────
+*.exe
+*.msi
+
+
 # ── Virtual Environment ────────────────────────────────────
 venv/
 .venv/
