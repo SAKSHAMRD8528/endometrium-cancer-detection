@@ -26,35 +26,45 @@ Upload a histopathological slide image and the system will:
 
 ## 🚀 Getting Started
 
-### 1. Clone the repository
-```bash
-git clone https://github.com/<your-username>/AIML_ECD.git
-cd AIML_ECD
-```
+### Option 1: One-Click Setup (Recommended for Windows)
+If you are on a new laptop or don't have Python installed:
 
-### 2. Create & activate a virtual environment
-```bash
-python -m venv venv
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/SAKSHAMRD8528/endometrium-cancer-detection.git
+   cd endometrium-cancer-detection
+   ```
+2. **Run the Script**: Double-click the `run.bat` file.
+   - It will automatically check for Python.
+   - If Python is missing, it will offer to install it via `winget`.
+   - It will create a virtual environment and install all dependencies.
+   - It will launch the Flask server automatically.
 
-# Windows
-venv\Scripts\activate
+### Option 2: Manual Setup (Classic)
 
-# macOS / Linux
-source venv/bin/activate
-```
+1. **Clone & Navigate**:
+   ```bash
+   git clone https://github.com/SAKSHAMRD8528/endometrium-cancer-detection.git
+   cd endometrium-cancer-detection
+   ```
 
-### 3. Install dependencies
-```bash
-pip install -r requirements.txt
-```
+2. **Create & activate a virtual environment**:
+   ```bash
+   python -m venv venv
+   # Windows
+   venv\Scripts\activate
+   ```
 
-### 4. Set up the database
-The app auto-creates `user_data.db` on first register. Just run the app and register a user.
+3. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-### 5. Run the app
-```bash
-python app.py
-```
+4. **Run the app**:
+   ```bash
+   python app.py
+   ```
+
 Visit → [http://127.0.0.1:5000](http://127.0.0.1:5000)
 
 ## 📁 Project Structure
@@ -62,7 +72,9 @@ Visit → [http://127.0.0.1:5000](http://127.0.0.1:5000)
 ```
 AIML_ECD/
 ├── app.py                          # Flask application & routes
+├── run.bat                         # Automated Windows setup & runner
 ├── requirements.txt                # Python dependencies
+├── Ping.txt                        # Quick-start reference
 ├── Convolutional_Neural_Network.h5 # Trained CNN model
 ├── ConvolutionalNeuralNetwork_ModelTraining.ipynb  # Training notebook
 ├── static/

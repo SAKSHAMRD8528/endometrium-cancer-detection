@@ -8,9 +8,10 @@
 
    1. Double-click the "run.bat" file in the project folder.
    2. The script will automatically:
-      - Check for Python
+      - Detect Python (supports 'python' and 'py' commands)
+      - **Auto-Install Python** via winget if missing (requires permission)
       - Create a virtual environment (venv)
-      - Install all necessary libraries (requirements.txt)
+      - Install/Update all libraries (requirements.txt)
       - Start the Flask server
    3. Once finished, open your browser to: http://127.0.0.1:5000/
 
@@ -76,6 +77,7 @@ Upload a histopathological endometrium tissue slide and the system will:
 
 AIML_ECD/
 ├── app.py                                       # Flask app — all routes & CNN inference
+├── run.bat                                      # Automated Windows setup & runner
 ├── requirements.txt                             # Python dependencies (pip freeze)
 ├── Convolutional_Neural_Network.h5              # Trained CNN model (15 MB)
 ├── ConvolutionalNeuralNetwork_ModelTraining.ipynb  # Jupyter notebook — model training
