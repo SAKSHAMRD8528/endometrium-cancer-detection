@@ -44,6 +44,7 @@ desktop.ini
 *.log
 *.tmp
 Ping.txt
-test/
+test/*
+!test/*_sample.JPG
 demo.py
 dataset/
