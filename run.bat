@@ -13,10 +13,37 @@ if not defined PY_CMD (
 )
 
 if not defined PY_CMD (
-    echo [ERROR] Python is not installed or not in PATH.
-    echo Please install Python 3.9+ from python.org and try again.
+    echo [WARNING] Python was not found on your system.
+    set /p "INSTALL_PY=Would you like to install Python 3.10 automatically? (y/n): "
+    if /i "!INSTALL_PY!" neq "y" (
+        echo [INFO] Skipping installation. Please install Python manually.
+        pause
+        exit /b 1
+    )
+    
+    echo [INFO] Checking for winget...
+    winget --version >nul 2>&1
+    if %errorlevel% neq 0 (
+        echo [ERROR] winget is not available on this system. 
+        echo Please install Python manually from: https://www.python.org/downloads/
+        pause
+        exit /b 1
+    )
+    
+    echo [INFO] Installing Python 3.10 (this may take a few minutes)...
+    winget install --id Python.Python.3.10 --exact --silent --accept-package-agreements --accept-source-agreements
+    
+    if %errorlevel% neq 0 (
+        echo [ERROR] Automatic installation failed.
+        pause
+        exit /b 1
+    )
+    
+    echo [SUCCESS] Python installation is complete!
+    echo [IMPORTANT] YOU MUST CLOSE THIS WINDOW AND OPEN run.bat AGAIN 
+    echo             to refresh the system environment variables.
     pause
-    exit /b 1
+    exit /b 0
 )
 
 echo [INFO] Using command: %PY_CMD%
