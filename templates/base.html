@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Endometrium Cancer Detection System using Deep Learning CNN">
+    <title>{% block title %}Endometrium Cancer Detection{% endblock %}</title>
+
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- Shared CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    {% block head %}{% endblock %}
+</head>
+
+<body>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar">
+        <div class="nav-wrapper">
+            <a class="navbar-brand" href="/">
+                <span class="brand-dot"></span>
+                ECD System
+            </a>
+
+            <!-- Mobile Hamburger -->
+            <div class="nav-ham" id="navHam" onclick="toggleNav()" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </div>
+
+            <!-- Nav Links -->
+            <ul class="nav-links" id="navLinks">
+                {% block nav_links %}
+                <li><a href="/userlog" class="{% block nav_analyse %}{% endblock %}">
+                        <i class="fa fa-microscope"></i> Analyse
+                    </a></li>
+                <li><a href="/graph.html" class="{% block nav_graph %}{% endblock %}">
+                        <i class="fa fa-chart-bar"></i> Graphs
+                    </a></li>
+                <li><a href="/developer.html" class="{% block nav_dev %}{% endblock %}">
+                        <i class="fa fa-users"></i> Developers
+                    </a></li>
+                <li><a href="/logout" class="nav-logout">
+                        <i class="fa fa-sign-out-alt"></i> Logout
+                    </a></li>
+                {% endblock %}
+            </ul>
+        </div>
+    </nav>
+
+    <!-- ===== PAGE CONTENT ===== -->
+    {% block content %}{% endblock %}
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-title">Endometrium Cancer Detection System</div>
+            <div class="footer-sub">AI-powered histopathological image analysis using Convolutional Neural Networks
+            </div>
+            <div
+                style="display:flex; justify-content:center; gap:20px; flex-wrap:wrap; font-size:0.8rem; color:var(--text-muted);">
+                <span><i class="fa fa-university" style="color:var(--accent)"></i> Adichunchanagiri Institute of
+                    Technology</span>
+                <span><i class="fa fa-graduation-cap" style="color:var(--accent)"></i> Department of CSE</span>
+            </div>
+            <div class="footer-copy">© 2024 ECD System. Built with Flask &amp; TensorFlow.</div>
+        </div>
+    </footer>
+
+    <!-- ===== SCROLL TO TOP ===== -->
+    <button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Scroll to top">
+        <i class="fa fa-arrow-up"></i>
+    </button>
+
+    <!-- ===== SCRIPTS ===== -->
+    <script>
+        // Scroll-to-top
+        window.addEventListener('scroll', function () {
+            const btn = document.getElementById('scroll-top');
+            btn.classList.toggle('show', window.scrollY > 300);
+        });
+
+        // Mobile nav toggle
+        function toggleNav() {
+            document.getElementById('navLinks').classList.toggle('open');
+        }
+
+        // Auto-dismiss alerts
+        document.querySelectorAll('.alert-close').forEach(btn => {
+            btn.addEventListener('click', function () {
+                this.closest('.alert').style.display = 'none';
+            });
+        });
+    </script>
+
+    {% block scripts %}{% endblock %}
+</body>
+
+</html>

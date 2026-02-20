@@ -1,0 +1,415 @@
+{% extends "base.html" %}
+
+{% block title %}Analyse — ECD System{% endblock %}
+{% block nav_analyse %}active{% endblock %}
+
+{% block content %}
+<!-- Loading Spinner Overlay -->
+<div class="spinner-overlay" id="spinnerOverlay">
+  <div class="spinner"></div>
+  <div class="spinner-text">Analysing image, please wait…</div>
+</div>
+
+<div class="page-container">
+
+  <!-- Page Header -->
+  <div class="page-title">
+    <h1>🔬 Image Analysis</h1>
+    <p>Upload a histopathological image to detect endometrium cancer type</p>
+  </div>
+
+  <!-- Alert Messages -->
+  {% if msg %}
+  <div class="alert alert-warning">
+    <i class="fa fa-exclamation-triangle"></i>
+    {{ msg }}
+    <button class="alert-close">✕</button>
+  </div>
+  {% endif %}
+
+  <!-- Upload Card -->
+  <div class="card" style="max-width:680px; margin:0 auto 40px;">
+    <div class="card-title">Upload Image</div>
+    <form action="{{ url_for('image') }}" method="POST" enctype="multipart/form-data" id="uploadForm"
+      onsubmit="showSpinner()">
+      <div class="file-upload-area" id="dropZone">
+        <input type="file" id="file" name="file" accept="image/*" required onchange="showFileName(this)">
+        <span class="file-upload-icon">📂</span>
+        <h3>Drop image here or click to browse</h3>
+        <p>Supports: JPG, PNG, BMP, TIFF — Histopathological slides</p>
+      </div>
+      <div class="file-name-display" id="fileNameDisplay">
+        <i class="fa fa-check-circle" style="color:var(--success)"></i>
+        <span id="fileNameText"></span>
+      </div>
+      <div style="margin-top:20px;">
+        <button type="submit" class="btn btn-primary btn-full">
+          <i class="fa fa-brain"></i> Analyse with CNN
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- ======= RESULTS SECTION ======= -->
+  {% if status %}
+  <div id="resultsSection">
+
+    <!-- Result Banner -->
+    <div class="card" style="margin-bottom:24px; background: linear-gradient(135deg, #1e293b 0%, #263348 100%);">
+
+      <!-- Top row: label + confidence -->
+      <div
+        style="display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:16px; margin-bottom:16px;">
+        <div>
+          <div class="card-title">Diagnosis Result</div>
+          <h2 style="font-size:1.4rem; margin-bottom:8px;">{{ status }}</h2>
+          {% if Label %}
+          <span class="result-badge badge-danger">⚠ {{ Label }}</span>
+          {% else %}
+          <span class="result-badge badge-success">✓ No Cancer Detected</span>
+          {% endif %}
+          <div style="font-size:0.78rem; color:var(--text-muted); margin-top:10px;">
+            <i class="fa fa-clock" style="color:var(--accent)"></i>
+            Analysed on <span id="analysisTime"></span>
+          </div>
+        </div>
+        <div style="text-align:right;">
+          <div
+            style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:.06em;">
+            Confidence</div>
+          <div style="font-size:2.4rem; font-weight:800; color:var(--accent);" id="confScore">
+            {{ accuracy.split('accuracy of ')[-1] if 'accuracy of' in accuracy else '—' }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Severity Meter -->
+      <div style="margin-bottom:18px;">
+        <div
+          style="display:flex; justify-content:space-between; font-size:0.72rem; color:var(--text-muted); margin-bottom:6px;">
+          <span>Severity Level</span>
+          <span id="severityLabel">—</span>
+        </div>
+        <div style="background:var(--bg); border-radius:99px; height:10px; overflow:hidden;">
+          <div id="severityBar"
+            style="height:100%; width:0%; border-radius:99px; transition:width 1s ease; background:var(--success);">
+          </div>
+        </div>
+        <div
+          style="display:flex; justify-content:space-between; font-size:0.68rem; color:var(--text-muted); margin-top:4px;">
+          <span>Low</span><span>Moderate</span><span>High</span>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <!-- Disease Description -->
+      <div id="diseaseDesc" style="margin-bottom:14px; font-size:0.88rem; line-height:1.65; color:var(--text-muted);">
+        <!-- filled by JS -->
+      </div>
+
+      <!-- Recommendation Box -->
+      <div id="recommendBox"
+        style="border-radius:var(--radius-sm); padding:14px 16px; font-size:0.83rem; line-height:1.6;">
+        <!-- filled by JS -->
+      </div>
+
+      <p style="font-size:0.78rem; color:var(--text-muted); margin-top:14px;">{{ accuracy }}</p>
+    </div>
+
+    <!-- Cell Count Stats -->
+    <div class="card" style="margin-bottom:24px;">
+      <div class="card-title">Cell Analysis</div>
+      <div class="stat-grid" style="grid-template-columns: repeat(3, 1fr);">
+        <div class="stat-chip">
+          <div class="stat-val">{{ cell_count[0] }}</div>
+          <div class="stat-label">Total Cells</div>
+        </div>
+        <div class="stat-chip">
+          <div class="stat-val" style="color:var(--danger);">{{ cell_count[1] }}</div>
+          <div class="stat-label">Damaged Cells</div>
+        </div>
+        <div class="stat-chip">
+          <div class="stat-val" style="color:var(--warning);">{{ cell_count[2] }}</div>
+          <div class="stat-label">Overlapping</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2x2 Image Grid -->
+    <div class="card-title" style="margin-bottom:16px;">Processed Images</div>
+    <div class="grid-2" style="margin-bottom:24px;">
+
+      {% if ImageDisplay %}
+      <div class="img-card" onclick="openLightbox('{{ ImageDisplay }}','Original Image')">
+        <img src="{{ ImageDisplay }}" alt="Original Image">
+        <div class="img-card-body">
+          <h4>Original Image</h4>
+          <p>Uploaded histopathological slide</p>
+          <span class="param-tag">Input</span>
+        </div>
+        <div class="img-zoom-hint"><i class="fa fa-search-plus"></i> Click to zoom</div>
+      </div>
+      {% endif %}
+
+      {% if ImageDisplay1 %}
+      <div class="img-card" onclick="openLightbox('{{ ImageDisplay1 }}','Grayscale')">
+        <img src="{{ ImageDisplay1 }}" alt="Grayscale">
+        <div class="img-card-body">
+          <h4>Grayscale</h4>
+          <p>Luminance channel for contrast analysis</p>
+          <span class="param-tag">BGR → Gray</span>
+        </div>
+        <div class="img-zoom-hint"><i class="fa fa-search-plus"></i> Click to zoom</div>
+      </div>
+      {% endif %}
+
+      {% if ImageDisplay2 %}
+      <div class="img-card" onclick="openLightbox('{{ ImageDisplay2 }}','Edge Detection')">
+        <img src="{{ ImageDisplay2 }}" alt="Edge Detection">
+        <div class="img-card-body">
+          <h4>Edge Detection</h4>
+          <p>Canny operator highlights cell boundaries</p>
+          <span class="param-tag">Canny: 250–254</span>
+        </div>
+        <div class="img-zoom-hint"><i class="fa fa-search-plus"></i> Click to zoom</div>
+      </div>
+      {% endif %}
+
+      {% if ImageDisplay3 %}
+      <div class="img-card" onclick="openLightbox('{{ ImageDisplay3 }}','Binary Threshold')">
+        <img src="{{ ImageDisplay3 }}" alt="Threshold">
+        <div class="img-card-body">
+          <h4>Binary Threshold</h4>
+          <p>Separates foreground cells from background</p>
+          <span class="param-tag">Threshold: 128</span>
+        </div>
+        <div class="img-zoom-hint"><i class="fa fa-search-plus"></i> Click to zoom</div>
+      </div>
+      {% endif %}
+
+    </div>
+
+    <!-- Processing Pipeline Info -->
+    <div class="card" style="margin-bottom:24px;">
+      <div class="card-title">How We Process Your Image</div>
+      <div class="card-heading">4-Step Computer Vision Pipeline</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:4px;">
+
+        <div class="pipeline-step">
+          <div class="pipeline-icon" style="background:rgba(59,130,246,0.12); color:#93c5fd;">①</div>
+          <div>
+            <div class="pipeline-title">Original Image</div>
+            <p class="pipeline-desc">The raw histopathological slide you uploaded. Used as the unmodified input for all
+              further processing steps and for CNN classification.</p>
+          </div>
+        </div>
+
+        <div class="pipeline-step">
+          <div class="pipeline-icon" style="background:rgba(100,116,139,0.15); color:#94a3b8;">②</div>
+          <div>
+            <div class="pipeline-title">Grayscale Conversion</div>
+            <p class="pipeline-desc">Converts from BGR colour to grayscale using luminance weighting. Removes colour
+              noise and highlights structural tissue patterns essential for analysis.</p>
+          </div>
+        </div>
+
+        <div class="pipeline-step">
+          <div class="pipeline-icon" style="background:rgba(245,158,11,0.12); color:#fde68a;">③</div>
+          <div>
+            <div class="pipeline-title">Edge Detection (Canny)</div>
+            <p class="pipeline-desc">Traces sharp intensity changes to reveal cell boundaries and tissue margins.
+              Parameters 250–254 are tuned specifically for histological slides to minimise noise.</p>
+          </div>
+        </div>
+
+        <div class="pipeline-step">
+          <div class="pipeline-icon" style="background:rgba(34,197,94,0.12); color:#86efac;">④</div>
+          <div>
+            <div class="pipeline-title">Binary Threshold</div>
+            <p class="pipeline-desc">Pixels above intensity 128 become white (cells), below become black (background).
+              This isolates individual cells so count, size, and overlap can be measured.</p>
+          </div>
+        </div>
+
+      </div>
+      <div
+        style="margin-top:20px; padding:12px 16px; background:var(--bg); border-radius:var(--radius-sm); border-left:3px solid var(--accent); font-size:0.82rem; color:var(--text-muted); line-height:1.7;">
+        <strong style="color:var(--text);">🧠 CNN Classification:</strong>
+        After preprocessing, the original image is resized to <strong style="color:var(--text);">128×128 px</strong> and
+        fed into a
+        Convolutional Neural Network trained on labelled endometrium tissue samples. The model outputs a
+        probability for each of four classes — the highest score determines the final diagnosis shown above.
+      </div>
+    </div>
+
+    <!-- Accuracy Bar Chart -->
+    {% if ImageDisplay4 %}
+    <div class="card" style="margin-bottom:24px;">
+      <div class="card-title">Probability Distribution</div>
+      <div class="card-heading">Class Confidence Comparison</div>
+      <img src="{{ ImageDisplay4 }}" alt="Accuracy Matrix"
+        style="width:100%; max-width:500px; display:block; margin:0 auto 16px; border-radius:var(--radius-sm);">
+      <p style="font-size:0.82rem; color:var(--text-muted); text-align:center;">
+        Bar chart showing CNN confidence across all four endometrium condition classes:
+        EA (Adenocarcinoma), EH (Hyperplasia), EP (Polyp), NE (Normal)
+      </p>
+    </div>
+    {% endif %}
+
+    <!-- Analyse Another Button -->
+    <div style="text-align:center; margin:8px 0 48px;">
+      <a href="/userlog" class="btn btn-primary"
+        style="display:inline-flex; align-items:center; gap:10px; padding:14px 36px; font-size:1rem;">
+        <i class="fa fa-redo"></i> Analyse Another Image
+      </a>
+    </div>
+
+  </div>{# end resultsSection #}
+  {% endif %}{# end if status #}
+
+</div>
+
+<!-- Lightbox -->
+<div id="lightbox" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.88); z-index:9999;
+     display:none; align-items:center; justify-content:center; flex-direction:column; gap:16px;"
+  onclick="closeLightbox()">
+  <div style="font-size:0.85rem; color:#94a3b8;" id="lightboxCaption"></div>
+  <img id="lightboxImg" src="" alt=""
+    style="max-width:90vw; max-height:82vh; border-radius:10px; box-shadow:0 0 60px #0008;">
+  <div style="font-size:0.75rem; color:#64748b;">Click anywhere to close</div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function showSpinner() {
+    document.getElementById('spinnerOverlay').classList.add('show');
+  }
+
+  function showFileName(input) {
+    const display = document.getElementById('fileNameDisplay');
+    const nameText = document.getElementById('fileNameText');
+    if (input.files && input.files[0]) {
+      nameText.textContent = input.files[0].name;
+      display.classList.add('show');
+    }
+  }
+
+  // Drag-and-drop styling
+  const dropZone = document.getElementById('dropZone');
+  if (dropZone) {
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    dropZone.addEventListener('drop', e => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      const fileInput = dropZone.querySelector('input[type=file]');
+      fileInput.files = e.dataTransfer.files;
+      showFileName(fileInput);
+    });
+  }
+
+  // ── Lightbox ──────────────────────────────────────────────
+  function openLightbox(src, caption) {
+    const lb = document.getElementById('lightbox');
+    document.getElementById('lightboxImg').src = src;
+    document.getElementById('lightboxCaption').textContent = caption;
+    lb.style.display = 'flex';
+  }
+  function closeLightbox() {
+    document.getElementById('lightbox').style.display = 'none';
+  }
+
+  // ── Results enhancements (only when results exist) ────────
+  const resultsSection = document.getElementById('resultsSection');
+  if (resultsSection) {
+
+    // 1. Timestamp
+    const now = new Date();
+    document.getElementById('analysisTime').textContent =
+      now.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) + ' at ' +
+      now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+
+    // 2. Auto-scroll to results smoothly
+    setTimeout(() => {
+      resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 400);
+
+    // 3. Severity meter + disease info
+    const confEl = document.getElementById('confScore');
+    const confText = confEl ? confEl.textContent.trim() : '';
+    const confNum = parseFloat(confText);  // e.g. 87.3 from "87.3%"
+
+    const bar = document.getElementById('severityBar');
+    const sevLabel = document.getElementById('severityLabel');
+    const descEl = document.getElementById('diseaseDesc');
+    const recEl = document.getElementById('recommendBox');
+
+    // Disease info map — keyed on what the backend Label actually contains
+    const info = {
+      'STAGE1': {
+        sev: 90, color: '#ef4444',
+        label: 'High',
+        desc: '<strong style="color:#f1f5f9">Endometrial Adenocarcinoma — Stage 1 Cancer</strong> — the most common form of endometrial cancer, originating in the glandular cells of the uterine lining. It is typically associated with excess estrogen, obesity, or PCOS.',
+        rec: '🔴 <strong>Immediate Action Required:</strong> Please consult a gynaecological oncologist as soon as possible. Stage 1 adenocarcinoma is highly treatable — do not delay.',
+        recBg: 'rgba(239,68,68,0.12)', recBorder: '#ef444440'
+      },
+      'STAGE2': {
+        sev: 65, color: '#f59e0b',
+        label: 'Moderate–High',
+        desc: '<strong style="color:#f1f5f9">Endometrial Hyperplasia — Stage 2 Cancer</strong> — a condition where the uterine lining becomes abnormally thick. Stage 2 indicates the cancer has begun to invade the cervical stroma and requires prompt treatment.',
+        rec: '🟠 <strong>Urgent Medical Review Required:</strong> Schedule an appointment with a gynaecological oncologist immediately. Stage 2 cancer is treatable but requires prompt intervention.',
+        recBg: 'rgba(245,158,11,0.12)', recBorder: '#f59e0b40'
+      },
+      'STAGE3': {
+        sev: 45, color: '#3b82f6',
+        label: 'Moderate',
+        desc: '<strong style="color:#f1f5f9">Endometrial Polyp — Stage 3 Cancer</strong> — at this stage, the cancer may have spread beyond the uterus to nearby lymph nodes or other structures. Early detection of Stage 3 significantly improves treatment outcomes.',
+        rec: '🔵 <strong>Medical Attention Required:</strong> Consult a gynaecological oncologist for staging workup and treatment planning. Radiation, hormone therapy, or surgery may be recommended.',
+        recBg: 'rgba(59,130,246,0.12)', recBorder: '#3b82f640'
+      },
+      'NORMAL': {
+        sev: 5, color: '#22c55e',
+        label: 'Low',
+        desc: '<strong style="color:#f1f5f9">Normal Endometrium</strong> — the tissue sample shows no signs of abnormal growth or cancerous changes. The uterine lining appears healthy and within normal histological parameters.',
+        rec: '🟢 <strong>No Immediate Concern:</strong> The result is normal. Continue routine gynaecological check-ups as recommended by your doctor.',
+        recBg: 'rgba(34,197,94,0.12)', recBorder: '#22c55e40'
+      }
+    };
+
+    // Match on actual badge Label text from backend: "stage1 cancer", "stage2 cancer", etc.
+    let matched = 'NORMAL';
+    const badge = document.querySelector('.result-badge');
+    if (badge) {
+      const t = badge.textContent.toUpperCase();
+      if (t.includes('STAGE1')) matched = 'STAGE1';
+      else if (t.includes('STAGE2')) matched = 'STAGE2';
+      else if (t.includes('STAGE3')) matched = 'STAGE3';
+      // If badge has no STAGE text (empty Label = normal), stays 'NORMAL'
+    }
+
+    const d = info[matched];
+
+    // Animate severity bar
+    setTimeout(() => {
+      bar.style.width = d.sev + '%';
+      bar.style.background = d.color;
+      sevLabel.textContent = d.label;
+      sevLabel.style.color = d.color;
+    }, 600);
+
+    // Disease description
+    if (descEl) descEl.innerHTML = d.desc;
+
+    // Recommendation box
+    if (recEl) {
+      recEl.innerHTML = d.rec;
+      recEl.style.background = d.recBg;
+      recEl.style.border = '1px solid ' + d.recBorder;
+      recEl.style.borderLeft = '4px solid ' + d.color;
+    }
+  }
+</script>
+{% endblock %}

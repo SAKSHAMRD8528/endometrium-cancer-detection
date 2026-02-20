@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Login — ECD System{% endblock %}
+
+{% block nav_links %}
+<!-- No nav links on login page, just the brand -->
+{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card">
+    <!-- Logo -->
+    <div class="auth-logo">
+      <div class="logo-icon">🔬</div>
+      <h2>ECD System</h2>
+      <p>Endometrium Cancer Detection</p>
+    </div>
+
+    <!-- Alert -->
+    {% if msg %}
+    <div class="alert alert-warning">
+      <i class="fa fa-exclamation-triangle"></i>
+      {{ msg }}
+      <button class="alert-close">✕</button>
+    </div>
+    {% endif %}
+
+    <!-- Tabs -->
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">Sign In</button>
+      <button class="auth-tab" id="tab-register" onclick="switchTab('register')">Register</button>
+    </div>
+
+    <!-- Login Form -->
+    <form method="post" action="{{ url_for('userlog') }}" id="form-login">
+      <div class="form-group">
+        <label for="login-user"><i class="fa fa-user"></i> Username</label>
+        <input type="text" class="form-control" id="login-user" placeholder="Enter your username" name="name" required>
+      </div>
+      <div class="form-group">
+        <label for="login-pass"><i class="fa fa-lock"></i> Password</label>
+        <input type="password" class="form-control" id="login-pass" placeholder="Enter your password" name="password"
+          required>
+      </div>
+      <button type="submit" class="btn btn-primary btn-full">
+        <i class="fa fa-sign-in-alt"></i> Sign In
+      </button>
+      <p class="form-footer">
+        Don't have an account?
+        <a href="#" onclick="switchTab('register'); return false;">Create one</a>
+      </p>
+    </form>
+
+    <!-- Register Form -->
+    <form method="post" action="{{ url_for('userreg') }}" id="form-register" style="display:none;">
+      <div class="form-group">
+        <label for="reg-user"><i class="fa fa-user"></i> Username</label>
+        <input type="text" class="form-control" id="reg-user" placeholder="Enter username" name="name" required>
+      </div>
+      <div class="form-group">
+        <label for="reg-email"><i class="fa fa-envelope"></i> Email</label>
+        <input type="email" class="form-control" id="reg-email" placeholder="Enter email" name="email" required>
+      </div>
+      <div class="form-group">
+        <label for="reg-phone"><i class="fa fa-phone"></i> Mobile No.</label>
+        <input type="tel" class="form-control" id="reg-phone" placeholder="Enter mobile number" name="phone" required>
+      </div>
+      <div class="form-group">
+        <label for="reg-pass"><i class="fa fa-lock"></i> Password</label>
+        <input type="password" class="form-control" id="reg-pass" placeholder="Create a password" name="password"
+          required>
+      </div>
+      <button type="submit" class="btn btn-primary btn-full">
+        <i class="fa fa-user-plus"></i> Create Account
+      </button>
+      <p class="form-footer">
+        Already have an account?
+        <a href="#" onclick="switchTab('login'); return false;">Sign in</a>
+      </p>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function switchTab(tab) {
+    const loginForm = document.getElementById('form-login');
+    const regForm = document.getElementById('form-register');
+    const tabLogin = document.getElementById('tab-login');
+    const tabReg = document.getElementById('tab-register');
+
+    if (tab === 'login') {
+      loginForm.style.display = 'block';
+      regForm.style.display = 'none';
+      tabLogin.classList.add('active');
+      tabReg.classList.remove('active');
+    } else {
+      loginForm.style.display = 'none';
+      regForm.style.display = 'block';
+      tabReg.classList.add('active');
+      tabLogin.classList.remove('active');
+    }
+  }
+</script>
+{% endblock %}

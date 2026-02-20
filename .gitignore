@@ -1,0 +1,41 @@
+# ── Python ────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# ── Virtual Environment ────────────────────────────────────
+venv/
+.venv/
+env/
+
+# ── Flask / App Runtime Files ──────────────────────────────
+# User database — contains credentials, never commit
+user_data.db
+
+# Temporary uploaded & processed images (regenerated at runtime)
+static/images/
+static/gray.jpg
+static/edges.jpg
+static/threshold.jpg
+static/matrix.png
+
+# ── IDE / Editor ───────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ── OS Files ───────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Jupyter Notebook Checkpoints ──────────────────────────
+.ipynb_checkpoints/
+
+# ── Misc ───────────────────────────────────────────────────
+*.log
+*.tmp
+Ping.txt

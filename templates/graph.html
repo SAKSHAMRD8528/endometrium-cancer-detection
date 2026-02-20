@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Model Graphs — ECD System{% endblock %}
+{% block nav_graph %}active{% endblock %}
+
+{% block content %}
+<div class="page-container">
+
+  <div class="page-title">
+    <h1>📊 Model Performance Graphs</h1>
+    <p>Training metrics and evaluation results for the CNN model</p>
+  </div>
+
+  <!-- Graph Cards -->
+  {% for i in range(3) %}
+  <div class="card section-gap">
+    <div class="card-title">{{ ['Training Accuracy', 'Training Loss', 'Confusion Matrix'][i] }}</div>
+    <div class="card-heading">{{ content[i] }}</div>
+    <img src="{{ images[i] }}" alt="{{ content[i] }}"
+      style="width:100%; max-width:700px; display:block; margin:0 auto 20px; border-radius:var(--radius-sm); border:1px solid var(--border);">
+    <p style="font-size:0.82rem; color:var(--text-muted); text-align:center;">
+      {% if i == 0 %}
+      Training and validation accuracy over epochs. Higher values indicate better generalisation.
+      {% elif i == 1 %}
+      Training and validation loss over epochs. Lower values indicate better model fit.
+      {% else %}
+      Confusion matrix showing true vs predicted labels across all four condition classes.
+      {% endif %}
+    </p>
+  </div>
+  {% endfor %}
+
+  <!-- Metrics Table -->
+  <div class="card section-gap">
+    <div class="card-title">Performance Metrics</div>
+    <div class="card-heading">Class-wise Precision &amp; F1 Score</div>
+    <div style="overflow-x:auto;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Class</th>
+            <th>Label</th>
+            <th>Precision</th>
+            <th>F1 Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="result-badge badge-danger" style="font-size:0.7rem;">EA</span></td>
+            <td>Endometrial Adenocarcinoma</td>
+            <td><strong style="color:var(--accent)">0.62</strong></td>
+            <td>0.41</td>
+          </tr>
+          <tr>
+            <td><span class="result-badge badge-warning" style="font-size:0.7rem;">EH</span></td>
+            <td>Endometrial Hyperplasia</td>
+            <td><strong style="color:var(--accent)">0.46</strong></td>
+            <td>0.56</td>
+          </tr>
+          <tr>
+            <td><span class="result-badge badge-warning" style="font-size:0.7rem;">EP</span></td>
+            <td>Endometrial Polyp</td>
+            <td><strong style="color:var(--accent)">0.37</strong></td>
+            <td>0.30</td>
+          </tr>
+          <tr>
+            <td><span class="result-badge badge-success" style="font-size:0.7rem;">NE</span></td>
+            <td>Normal Endometrium</td>
+            <td><strong style="color:var(--accent)">0.60</strong></td>
+            <td>0.59</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:0.78rem; color:var(--text-muted); margin-top:16px;">
+      F1 Score = harmonic mean of precision and recall. Precision = TP / (TP + FP).
+      EA: Endometrial Adenocarcinoma · EH: Endometrial Hyperplasia · EP: Endometrial Polyp · NE: Normal Endometrium
+    </p>
+  </div>
+
+</div>
+{% endblock %}
