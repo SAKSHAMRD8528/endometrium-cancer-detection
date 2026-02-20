@@ -50,7 +50,7 @@ echo [INFO] Using command: %PY_CMD%
 
 :: 2. Create Virtual Environment if it doesn't exist
 if not exist "venv" (
-    echo [INFO] Creating virtual environment...
+    echo [INFO] Virtual environment not found. Creating...
     %PY_CMD% -m venv venv
     if %errorlevel% neq 0 (
         echo [ERROR] Failed to create virtual environment.
@@ -58,6 +58,8 @@ if not exist "venv" (
         exit /b 1
     )
     echo [SUCCESS] Virtual environment created.
+) else (
+    echo [INFO] Virtual environment already exists.
 )
 
 :: 3. Activate Virtual Environment
@@ -70,27 +72,41 @@ if %errorlevel% neq 0 (
 )
 
 :: 4. Install/Update dependencies
-echo [INFO] Checking/Installing dependencies...
-venv\Scripts\python.exe -m pip install --upgrade pip
+echo [INFO] Checking dependencies (this may take a moment)...
+venv\Scripts\python.exe -m pip install --upgrade pip >nul 2>&1
 venv\Scripts\pip.exe install -r requirements.txt
 if %errorlevel% neq 0 (
     echo [ERROR] Failed to install dependencies.
     pause
     exit /b 1
 )
-echo [SUCCESS] Dependencies are ready.
+echo [SUCCESS] Dependencies are confirmed.
 
-:: 5. Run the application
-echo [INFO] Starting Endometrium Cancer Detection system...
-echo [INFO] The app will be available at: http://127.0.0.1:5000/
+:: 5. Final Summary and Launch
+cls
+echo ===============================================================
+echo       ENDOMETRIUM CANCER DETECTION (ECD) — System Ready
+echo ===============================================================
 echo.
+echo   [OK] Python Detected (%PY_CMD%)
+echo   [OK] Virtual Environment Ready
+echo   [OK] Dependencies Installed
+echo.
+echo [INFO] Starting the application...
+echo [INFO] Once started, go to: http://127.0.0.1:5000/
+echo.
+echo Press any key to launch the server...
+pause >nul
+
 venv\Scripts\python.exe app.py
 
 if %errorlevel% neq 0 (
     echo.
-    echo [ERROR] Application crashed or stopped unexpectedly.
+    echo [ERROR] Application crashed or stopped unexpectedly (Code: %errorlevel%).
     pause
 )
 
 deactivate
+echo.
+echo [INFO] Session ended.
 pause
