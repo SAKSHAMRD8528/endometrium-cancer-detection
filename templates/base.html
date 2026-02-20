@@ -7,10 +7,20 @@
     <meta name="description" content="Endometrium Cancer Detection System using Deep Learning CNN">
     <title>{% block title %}Endometrium Cancer Detection{% endblock %}</title>
 
+    <!-- Apply saved theme BEFORE paint to avoid flash -->
+    <script>
+        (function () {
+            if (localStorage.getItem('ecd-theme') === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
+
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,400&family=DM+Sans:wght@400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
@@ -26,7 +36,7 @@
     <nav class="navbar">
         <div class="nav-wrapper">
             <a class="navbar-brand" href="/">
-                <span class="brand-dot"></span>
+                <span class="brand-dot">🔬</span>
                 ECD System
             </a>
 
@@ -35,23 +45,32 @@
                 <span></span><span></span><span></span>
             </div>
 
-            <!-- Nav Links -->
-            <ul class="nav-links" id="navLinks">
-                {% block nav_links %}
-                <li><a href="/analyse" class="{% block nav_analyse %}{% endblock %}">
-                        <i class="fa fa-microscope"></i> Analyse
-                    </a></li>
-                <li><a href="/graph.html" class="{% block nav_graph %}{% endblock %}">
-                        <i class="fa fa-chart-bar"></i> Graphs
-                    </a></li>
-                <li><a href="/developer.html" class="{% block nav_dev %}{% endblock %}">
-                        <i class="fa fa-users"></i> Developers
-                    </a></li>
-                <li><a href="/logout" class="nav-logout">
-                        <i class="fa fa-sign-out-alt"></i> Logout
-                    </a></li>
-                {% endblock %}
-            </ul>
+            <div class="nav-actions">
+                <!-- Nav Links -->
+                <ul class="nav-links" id="navLinks">
+                    {% block nav_links %}
+                    <li><a href="/analyse" class="{% block nav_analyse %}{% endblock %}">
+                            <i class="fa fa-microscope"></i> Analyse
+                        </a></li>
+                    <li><a href="/graph.html" class="{% block nav_graph %}{% endblock %}">
+                            <i class="fa fa-chart-bar"></i> Graphs
+                        </a></li>
+                    <li><a href="/developer.html" class="{% block nav_dev %}{% endblock %}">
+                            <i class="fa fa-users"></i> Developers
+                        </a></li>
+                    <li><a href="/logout" class="nav-logout">
+                            <i class="fa fa-sign-out-alt"></i> Logout
+                        </a></li>
+                    {% endblock %}
+                </ul>
+
+                <!-- Theme Toggle -->
+                <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle theme"
+                    title="Switch theme">
+                    <i class="fa fa-moon icon-dark"></i>
+                    <i class="fa fa-sun icon-light"></i>
+                </button>
+            </div>
         </div>
     </nav>
 
@@ -62,15 +81,15 @@
     <footer>
         <div class="footer-inner">
             <div class="footer-title">Endometrium Cancer Detection System</div>
-            <div class="footer-sub">AI-powered histopathological image analysis using Convolutional Neural Networks
+            <div class="footer-sub">AI-powered histopathological image analysis using Convolutional Neural Networks for
+                early-stage cancer detection.</div>
+            <div class="footer-tags">
+                <span class="footer-tag"><i class="fa fa-university"></i> Prof. Ram Meghe Institute of Technology &amp;
+                    Research</span>
+                <span class="footer-tag"><i class="fa fa-graduation-cap"></i> Dept. of CSE</span>
+                <span class="footer-tag"><i class="fa fa-flask"></i> Flask &amp; TensorFlow</span>
             </div>
-            <div
-                style="display:flex; justify-content:center; gap:20px; flex-wrap:wrap; font-size:0.8rem; color:var(--text-muted);">
-                <span><i class="fa fa-university" style="color:var(--accent)"></i> Prof Ram Meghe Institute of
-                    Technology &amp; Research</span>
-                <span><i class="fa fa-graduation-cap" style="color:var(--accent)"></i> Department of CSE</span>
-            </div>
-            <div class="footer-copy">© 2024 ECD System. Built with Flask &amp; TensorFlow.</div>
+            <div class="footer-copy">© 2026 ECD System · All Rights Reserved</div>
         </div>
     </footer>
 
@@ -81,6 +100,19 @@
 
     <!-- ===== SCRIPTS ===== -->
     <script>
+        // Theme toggle with localStorage persistence
+        function toggleTheme() {
+            const html = document.documentElement;
+            const isLight = html.getAttribute('data-theme') === 'light';
+            if (isLight) {
+                html.removeAttribute('data-theme');
+                localStorage.setItem('ecd-theme', 'dark');
+            } else {
+                html.setAttribute('data-theme', 'light');
+                localStorage.setItem('ecd-theme', 'light');
+            }
+        }
+
         // Scroll-to-top
         window.addEventListener('scroll', function () {
             const btn = document.getElementById('scroll-top');
@@ -92,10 +124,23 @@
             document.getElementById('navLinks').classList.toggle('open');
         }
 
-        // Auto-dismiss alerts
+        // Close mobile nav when clicking outside
+        document.addEventListener('click', function (e) {
+            const nav = document.getElementById('navLinks');
+            const ham = document.getElementById('navHam');
+            if (nav.classList.contains('open') && !nav.contains(e.target) && !ham.contains(e.target)) {
+                nav.classList.remove('open');
+            }
+        });
+
+        // Auto-dismiss alerts with animation
         document.querySelectorAll('.alert-close').forEach(btn => {
             btn.addEventListener('click', function () {
-                this.closest('.alert').style.display = 'none';
+                const alert = this.closest('.alert');
+                alert.style.opacity = '0';
+                alert.style.transform = 'translateY(-8px)';
+                alert.style.transition = 'all 0.25s ease';
+                setTimeout(() => alert.style.display = 'none', 260);
             });
         });
     </script>

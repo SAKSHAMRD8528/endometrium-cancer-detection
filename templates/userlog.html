@@ -6,8 +6,11 @@
 {% block content %}
 <!-- Loading Spinner Overlay -->
 <div class="spinner-overlay" id="spinnerOverlay">
-  <div class="spinner"></div>
-  <div class="spinner-text">Analysing image, please wait…</div>
+  <div class="spinner">
+    <div class="spinner-dot"></div>
+  </div>
+  <div class="spinner-text">Analysing histopathological image…</div>
+  <div class="spinner-subtext">Running CNN inference, please wait</div>
 </div>
 
 <div class="page-container">
@@ -55,7 +58,7 @@
   <div id="resultsSection">
 
     <!-- Result Banner -->
-    <div class="card" style="margin-bottom:24px; background: linear-gradient(135deg, #1e293b 0%, #263348 100%);">
+    <div class="card" style="margin-bottom:24px; border-left: 4px solid var(--accent);">
 
       <!-- Top row: label + confidence -->
       <div
@@ -197,7 +200,7 @@
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:4px;">
 
         <div class="pipeline-step">
-          <div class="pipeline-icon" style="background:rgba(59,130,246,0.12); color:#93c5fd;">①</div>
+          <div class="pipeline-icon" style="background:var(--accent-glow); color:var(--violet);">①</div>
           <div>
             <div class="pipeline-title">Original Image</div>
             <p class="pipeline-desc">The raw histopathological slide you uploaded. Used as the unmodified input for all
@@ -206,7 +209,7 @@
         </div>
 
         <div class="pipeline-step">
-          <div class="pipeline-icon" style="background:rgba(100,116,139,0.15); color:#94a3b8;">②</div>
+          <div class="pipeline-icon" style="background:rgba(100,116,139,0.1); color:var(--text-muted);">②</div>
           <div>
             <div class="pipeline-title">Grayscale Conversion</div>
             <p class="pipeline-desc">Converts from BGR colour to grayscale using luminance weighting. Removes colour
@@ -215,7 +218,7 @@
         </div>
 
         <div class="pipeline-step">
-          <div class="pipeline-icon" style="background:rgba(245,158,11,0.12); color:#fde68a;">③</div>
+          <div class="pipeline-icon" style="background:rgba(217,119,6,0.1); color:var(--warning);">③</div>
           <div>
             <div class="pipeline-title">Edge Detection (Canny)</div>
             <p class="pipeline-desc">Traces sharp intensity changes to reveal cell boundaries and tissue margins.
@@ -224,7 +227,7 @@
         </div>
 
         <div class="pipeline-step">
-          <div class="pipeline-icon" style="background:rgba(34,197,94,0.12); color:#86efac;">④</div>
+          <div class="pipeline-icon" style="background:rgba(5,150,105,0.1); color:var(--success);">④</div>
           <div>
             <div class="pipeline-title">Binary Threshold</div>
             <p class="pipeline-desc">Pixels above intensity 128 become white (cells), below become black (background).
@@ -350,32 +353,32 @@
     // Disease info map — keyed on what the backend Label actually contains
     const info = {
       'STAGE1': {
-        sev: 30, color: '#eab308',
+        sev: 30, color: 'var(--warning)',
         label: 'Low',
-        desc: '<strong style="color:#f1f5f9">Endometrial Adenocarcinoma — Stage 1 Cancer</strong> — the most common form of endometrial cancer, originating in the glandular cells of the uterine lining. It is typically associated with excess estrogen, obesity, or PCOS.',
+        desc: '<strong style="color:var(--text)">Endometrial Adenocarcinoma — Stage 1 Cancer</strong> — the most common form of endometrial cancer, originating in the glandular cells of the uterine lining. It is typically associated with excess estrogen, obesity, or PCOS.',
         rec: '🟡 <strong>Medical Consultation Recommended:</strong> Please consult a gynaecological oncologist. Stage 1 adenocarcinoma is highly treatable — early action gives the best outcomes.',
-        recBg: 'rgba(234,179,8,0.12)', recBorder: '#eab30840'
+        recBg: 'var(--gradient-soft)', recBorder: 'var(--border-teal)'
       },
       'STAGE2': {
-        sev: 60, color: '#f97316',
+        sev: 60, color: 'var(--warning)',
         label: 'Moderate',
-        desc: '<strong style="color:#f1f5f9">Endometrial Hyperplasia — Stage 2 Cancer</strong> — a condition where the uterine lining becomes abnormally thick. Stage 2 indicates the cancer has begun to invade the cervical stroma and requires prompt treatment.',
+        desc: '<strong style="color:var(--text)">Endometrial Hyperplasia — Stage 2 Cancer</strong> — a condition where the uterine lining becomes abnormally thick. Stage 2 indicates the cancer has begun to invade the cervical stroma and requires prompt treatment.',
         rec: '🟠 <strong>Urgent Medical Review Required:</strong> Schedule an appointment with a gynaecological oncologist immediately. Stage 2 cancer is treatable but requires prompt intervention.',
-        recBg: 'rgba(249,115,22,0.12)', recBorder: '#f9731640'
+        recBg: 'var(--gradient-soft)', recBorder: 'var(--border-teal)'
       },
       'STAGE3': {
-        sev: 90, color: '#ef4444',
+        sev: 90, color: 'var(--danger)',
         label: 'High',
-        desc: '<strong style="color:#f1f5f9">Endometrial Polyp — Stage 3 Cancer</strong> — at this stage, the cancer may have spread beyond the uterus to nearby lymph nodes or other structures. Early detection of Stage 3 significantly improves treatment outcomes.',
+        desc: '<strong style="color:var(--text)">Endometrial Polyp — Stage 3 Cancer</strong> — at this stage, the cancer may have spread beyond the uterus to nearby lymph nodes or other structures. Early detection of Stage 3 significantly improves treatment outcomes.',
         rec: '🔴 <strong>Critical Medical Attention Required:</strong> Consult a gynaecological oncologist immediately for staging workup and treatment planning. Radiation, hormone therapy, or surgery may be recommended.',
-        recBg: 'rgba(239,68,68,0.12)', recBorder: '#ef444440'
+        recBg: 'var(--gradient-soft)', recBorder: 'var(--border-teal)'
       },
       'NORMAL': {
-        sev: 5, color: '#22c55e',
+        sev: 5, color: 'var(--success)',
         label: 'Lowest',
-        desc: '<strong style="color:#f1f5f9">Normal Endometrium</strong> — the tissue sample shows no signs of abnormal growth or cancerous changes. The uterine lining appears healthy and within normal histological parameters.',
+        desc: '<strong style="color:var(--text)">Normal Endometrium</strong> — the tissue sample shows no signs of abnormal growth or cancerous changes. The uterine lining appears healthy and within normal histological parameters.',
         rec: '🟢 <strong>No Immediate Concern:</strong> The result is normal. Continue routine gynaecological check-ups as recommended by your doctor.',
-        recBg: 'rgba(34,197,94,0.12)', recBorder: '#22c55e40'
+        recBg: 'var(--gradient-soft)', recBorder: 'var(--border-teal)'
       }
     };
 
