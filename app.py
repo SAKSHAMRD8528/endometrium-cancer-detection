@@ -1,4 +1,5 @@
 import os
+import re
 import time
 import matplotlib
 matplotlib.use('Agg')  # Must be before pyplot import — prevents Tkinter crash in Flask threads
@@ -18,6 +19,9 @@ app = Flask(__name__)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+# Load CNN model once at startup — avoids reloading on every request
+model = load_model(os.path.join(BASE_DIR, "Convolutional_Neural_Network.h5"))
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -31,8 +35,8 @@ def userlog():
         name = request.form['name']
         password = request.form['password']
 
-        query = "SELECT name, password FROM user WHERE name = '" + name + "' AND password= '" + password + "'"
-        cursor.execute(query)
+        query = "SELECT name, password FROM user WHERE name = ? AND password = ?"
+        cursor.execute(query, (name, password))
         result = cursor.fetchall()
 
         if len(result) == 0:
@@ -56,7 +60,7 @@ def userreg():
         command = """CREATE TABLE IF NOT EXISTS user(name TEXT, password TEXT, mobile TEXT, email TEXT)"""
         cursor.execute(command)
 
-        cursor.execute("INSERT INTO user VALUES ('" + name + "', '" + password + "', '" + mobile + "', '" + email + "')")
+        cursor.execute("INSERT INTO user VALUES (?, ?, ?, ?)", (name, password, mobile, email))
         connection.commit()
 
         return render_template('index.html', msg='Successfully Registered')
@@ -83,7 +87,10 @@ def image():
         if not uploaded_file or uploaded_file.filename == '':
             return render_template('userlog.html', msg='No file selected. Please choose an image.')
 
-        fileName = uploaded_file.filename
+        raw_name = uploaded_file.filename
+        name_part, ext = os.path.splitext(raw_name)
+        name_part = re.sub(r'[^\w\-]', '_', name_part)  # replace special chars with _
+        fileName = name_part + ext.lower()
         dirPath = os.path.join(BASE_DIR, 'static', 'images')
         os.makedirs(dirPath, exist_ok=True)
         for f in os.listdir(dirPath):
@@ -123,8 +130,6 @@ def image():
                     if distance < 20:
                         overlap_cells += 1
 
-        cnn_model_path = os.path.join(BASE_DIR, "Convolutional_Neural_Network.h5")
-        model = load_model(cnn_model_path)
         path = os.path.join(BASE_DIR, 'static', 'images', fileName)
 
         class_labels = ['Endometrial Adocarcinoma', 'Endometrial hyper plsia', 'Endometria polyp', 'Normal Endometrium']

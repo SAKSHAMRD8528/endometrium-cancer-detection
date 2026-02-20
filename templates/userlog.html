@@ -350,29 +350,29 @@
     // Disease info map — keyed on what the backend Label actually contains
     const info = {
       'STAGE1': {
-        sev: 90, color: '#ef4444',
-        label: 'High',
+        sev: 30, color: '#eab308',
+        label: 'Low',
         desc: '<strong style="color:#f1f5f9">Endometrial Adenocarcinoma — Stage 1 Cancer</strong> — the most common form of endometrial cancer, originating in the glandular cells of the uterine lining. It is typically associated with excess estrogen, obesity, or PCOS.',
-        rec: '🔴 <strong>Immediate Action Required:</strong> Please consult a gynaecological oncologist as soon as possible. Stage 1 adenocarcinoma is highly treatable — do not delay.',
-        recBg: 'rgba(239,68,68,0.12)', recBorder: '#ef444440'
+        rec: '🟡 <strong>Medical Consultation Recommended:</strong> Please consult a gynaecological oncologist. Stage 1 adenocarcinoma is highly treatable — early action gives the best outcomes.',
+        recBg: 'rgba(234,179,8,0.12)', recBorder: '#eab30840'
       },
       'STAGE2': {
-        sev: 65, color: '#f59e0b',
-        label: 'Moderate–High',
+        sev: 60, color: '#f97316',
+        label: 'Moderate',
         desc: '<strong style="color:#f1f5f9">Endometrial Hyperplasia — Stage 2 Cancer</strong> — a condition where the uterine lining becomes abnormally thick. Stage 2 indicates the cancer has begun to invade the cervical stroma and requires prompt treatment.',
         rec: '🟠 <strong>Urgent Medical Review Required:</strong> Schedule an appointment with a gynaecological oncologist immediately. Stage 2 cancer is treatable but requires prompt intervention.',
-        recBg: 'rgba(245,158,11,0.12)', recBorder: '#f59e0b40'
+        recBg: 'rgba(249,115,22,0.12)', recBorder: '#f9731640'
       },
       'STAGE3': {
-        sev: 45, color: '#3b82f6',
-        label: 'Moderate',
+        sev: 90, color: '#ef4444',
+        label: 'High',
         desc: '<strong style="color:#f1f5f9">Endometrial Polyp — Stage 3 Cancer</strong> — at this stage, the cancer may have spread beyond the uterus to nearby lymph nodes or other structures. Early detection of Stage 3 significantly improves treatment outcomes.',
-        rec: '🔵 <strong>Medical Attention Required:</strong> Consult a gynaecological oncologist for staging workup and treatment planning. Radiation, hormone therapy, or surgery may be recommended.',
-        recBg: 'rgba(59,130,246,0.12)', recBorder: '#3b82f640'
+        rec: '🔴 <strong>Critical Medical Attention Required:</strong> Consult a gynaecological oncologist immediately for staging workup and treatment planning. Radiation, hormone therapy, or surgery may be recommended.',
+        recBg: 'rgba(239,68,68,0.12)', recBorder: '#ef444440'
       },
       'NORMAL': {
         sev: 5, color: '#22c55e',
-        label: 'Low',
+        label: 'Lowest',
         desc: '<strong style="color:#f1f5f9">Normal Endometrium</strong> — the tissue sample shows no signs of abnormal growth or cancerous changes. The uterine lining appears healthy and within normal histological parameters.',
         rec: '🟢 <strong>No Immediate Concern:</strong> The result is normal. Continue routine gynaecological check-ups as recommended by your doctor.',
         recBg: 'rgba(34,197,94,0.12)', recBorder: '#22c55e40'
