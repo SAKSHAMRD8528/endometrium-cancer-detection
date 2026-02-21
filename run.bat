@@ -22,7 +22,20 @@ if not defined PY_CMD (
     exit /b 1
 )
 
-echo [OK] Python detected: %PY_CMD%
+:: Get Python version for info/warning
+for /f "tokens=2" %%v in ('%PY_CMD% --version') do set "PY_VER=%%v"
+echo [OK] Python detected: %PY_CMD% (Version %PY_VER%)
+
+:: Warning for Python 3.11+
+for /f "tokens=1,2 delims=." %%a in ("%PY_VER%") do (
+    if %%a geq 3 if %%b geq 11 (
+        echo.
+        echo [WARNING] You are using Python %PY_VER%.
+        echo TensorFlow 2.11 works best on Python 3.9 or 3.10.
+        echo You might encounter errors during installation or runtime.
+        echo.
+    )
+)
 
 :: 2. Create Virtual Environment
 if not exist "venv\" (
@@ -41,11 +54,17 @@ echo [INFO] Checking dependencies (this may take a minute)...
 venv\Scripts\python.exe -m pip install --upgrade pip >nul 2>&1
 venv\Scripts\pip.exe install -r requirements.txt
 if errorlevel 1 (
-    echo [ERROR] Failed to install dependencies.
-    pause
-    exit /b 1
+    echo.
+    echo [WARNING] Some dependencies failed to install.
+    set /p "PROCEED=Would you like to try running the application anyway? (y/n): "
+    if /i "!PROCEED!" neq "y" (
+        echo [INFO] Exiting...
+        pause
+        exit /b 1
+    )
+) else (
+    echo [SUCCESS] All dependencies are ready.
 )
-echo [SUCCESS] All dependencies are ready.
 
 :: 4. Launch Application
 echo.
