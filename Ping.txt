@@ -196,3 +196,12 @@ AIML_ECD/
    - This is a RESEARCH / EDUCATIONAL project — NOT for clinical use.
 
 ===============================================================
+
+=== IMPORTANT NOTE ON PORTABILITY ===
+
+   - When moving this project to a new laptop, **DO NOT COPY THE 'venv' FOLDER**.
+   - Virtual environments are tied to the specific folder paths of the original computer.
+   - Simply copy the code, and run `run.bat` on the new laptop. It will safely recreate
+     the environment for you.
+
+===============================================================

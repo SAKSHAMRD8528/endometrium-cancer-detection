@@ -67,6 +67,9 @@ If you are on a new laptop or don't have Python installed:
 
 Visit → [http://127.0.0.1:5000](http://127.0.0.1:5000)
 
+> [!IMPORTANT]
+> **Portability Note:** When copying this project to another computer, **DO NOT copy the `venv` folder**. Virtual environments are not portable. Instead, copy only the code files and run `run.bat` on the new machine to create a fresh, compatible environment.
+
 ## 📁 Project Structure
 
 ```
